@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Calculator App</title>
+  <meta name="description" content="A fast, accurate, accessible, and visually stunning modern web calculator with Scientific mode and Calculation History." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="background-decorations">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+
+  <div class="app-viewport">
+    <main class="calculator-card" role="calculator" aria-label="Modern Calculator">
+      
+      <!-- Calculator Header & Mode Controls -->
+      <header class="calculator-header">
+        <div class="brand-title">
+          <span class="brand-dot"></span>
+          <h1>Modern Calc</h1>
+        </div>
+
+        <div class="header-actions">
+          <!-- Mode Toggle Pill -->
+          <div class="mode-toggle-group" role="radiogroup" aria-label="Calculator Mode">
+            <button type="button" id="btn-mode-standard" class="mode-btn active" role="radio" aria-checked="true">Std</button>
+            <button type="button" id="btn-mode-scientific" class="mode-btn" role="radio" aria-checked="false">Sci</button>
+          </div>
+
+          <!-- History Drawer Toggle -->
+          <button type="button" id="btn-toggle-history" class="btn-icon-action" aria-label="Open calculation history" title="Calculation History">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="history-badge" class="badge">0</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Calculator Display -->
+      <section class="display-container" aria-label="Calculator Output">
+        <div class="display-meta">
+          <span id="angle-mode-indicator" class="angle-indicator hidden">DEG</span>
+        </div>
+        <div id="expression-display" class="expression-display" aria-live="polite" aria-atomic="true" title="Previous calculation history"></div>
+        <div id="result-display" class="result-display" aria-live="assertive" aria-atomic="true" title="Current result or input">0</div>
+      </section>
+
+      <!-- Scientific Functions Pad (Shown when Scientific mode active) -->
+      <section id="scientific-pad" class="keypad-section scientific-section hidden" aria-label="Scientific Controls">
+        <div class="calculator-grid scientific-grid">
+          <!-- Row 1: Angle Mode & Trigonometry -->
+          <button type="button" class="btn btn-sci" data-action="angle-toggle" aria-label="Toggle Degree or Radian mode">
+            <span id="angle-btn-text">DEG</span>
+          </button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="sin" aria-label="Sine">sin</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="cos" aria-label="Cosine">cos</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="tan" aria-label="Tangent">tan</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="factorial" aria-label="Factorial">n!</button>
+
+          <!-- Row 2: Powers, Roots & Logs -->
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="sqrt" aria-label="Square root">√</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="square" aria-label="Square">x²</button>
+          <button type="button" class="btn btn-sci" data-action="operator" data-value="^" aria-label="Power x to y">x^y</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="log" aria-label="Logarithm base 10">log</button>
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="ln" aria-label="Natural logarithm">ln</button>
+
+          <!-- Row 3: Constants & Reciprocal -->
+          <button type="button" class="btn btn-sci" data-action="sci-func" data-value="reciprocal" aria-label="Reciprocal one over x">1/x</button>
+          <button type="button" class="btn btn-sci" data-action="constant" data-value="pi" aria-label="Pi constant">π</button>
+          <button type="button" class="btn btn-sci" data-action="constant" data-value="e" aria-label="Euler number constant">e</button>
+          <button type="button" class="btn btn-sci" data-action="number" data-value="(" aria-label="Open parenthesis">(</button>
+          <button type="button" class="btn btn-sci" data-action="number" data-value=")" aria-label="Close parenthesis">)</button>
+        </div>
+      </section>
+
+      <!-- Standard Calculator Keypad -->
+      <section class="keypad-container" aria-label="Standard Keypad">
+        <div class="calculator-grid standard-grid">
+          <!-- Row 1: Utilities & Division -->
+          <button type="button" class="btn btn-utility" data-action="clear" aria-label="Clear all">AC</button>
+          <button type="button" class="btn btn-utility" data-action="backspace" aria-label="Delete last entry">
+            <svg class="icon-backspace" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+              <line x1="18" y1="9" x2="12" y2="15"></line>
+              <line x1="12" y1="9" x2="18" y2="15"></line>
+            </svg>
+          </button>
+          <button type="button" class="btn btn-utility" data-action="percent" aria-label="Percentage">%</button>
+          <button type="button" class="btn btn-operator" data-action="operator" data-value="÷" aria-label="Divide">÷</button>
+
+          <!-- Row 2: 7, 8, 9, Multiply -->
+          <button type="button" class="btn btn-number" data-action="number" data-value="7">7</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="8">8</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="9">9</button>
+          <button type="button" class="btn btn-operator" data-action="operator" data-value="×" aria-label="Multiply">×</button>
+
+          <!-- Row 3: 4, 5, 6, Subtract -->
+          <button type="button" class="btn btn-number" data-action="number" data-value="4">4</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="5">5</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="6">6</button>
+          <button type="button" class="btn btn-operator" data-action="operator" data-value="−" aria-label="Subtract">−</button>
+
+          <!-- Row 4: 1, 2, 3, Add -->
+          <button type="button" class="btn btn-number" data-action="number" data-value="1">1</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="2">2</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="3">3</button>
+          <button type="button" class="btn btn-operator" data-action="operator" data-value="+" aria-label="Add">+</button>
+
+          <!-- Row 5: Negate, 0, Decimal, Equals -->
+          <button type="button" class="btn btn-utility" data-action="negate" aria-label="Toggle positive or negative">±</button>
+          <button type="button" class="btn btn-number" data-action="number" data-value="0">0</button>
+          <button type="button" class="btn btn-number" data-action="decimal" data-value="." aria-label="Decimal point">.</button>
+          <button type="button" class="btn btn-equals" data-action="equals" aria-label="Calculate equals">=</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Calculation History Overlay & Panel -->
+    <div id="history-overlay" class="history-overlay hidden"></div>
+    <aside id="history-drawer" class="history-drawer hidden" aria-label="Calculation History Panel">
+      <div class="history-header">
+        <h2>Calculation History</h2>
+        <div class="history-actions">
+          <button type="button" id="btn-clear-history" class="btn-text-action" aria-label="Clear history log">Clear</button>
+          <button type="button" id="btn-close-history" class="btn-close-icon" aria-label="Close history panel">×</button>
+        </div>
+      </div>
+      
+      <div id="history-content" class="history-content">
+        <ul id="history-list" class="history-list">
+          <!-- Dynamically populated calculation history items -->
+        </ul>
+        <div id="history-empty" class="history-empty">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p>No calculation history yet.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

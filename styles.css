@@ -1,0 +1,629 @@
+/* ==========================================================================
+   Modern Calculator App - Design System & Stylesheet
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS Custom Properties / Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Color Palette - Core */
+  --bg-dark: #090d16;
+  --bg-gradient-start: #0b0f19;
+  --bg-gradient-end: #141b2d;
+  
+  /* Glassmorphic Surfaces */
+  --card-bg: rgba(21, 28, 44, 0.65);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1);
+  --display-bg: rgba(13, 18, 30, 0.7);
+  --display-border: rgba(255, 255, 255, 0.05);
+
+  /* Button Colors */
+  --btn-num-bg: rgba(255, 255, 255, 0.05);
+  --btn-num-hover: rgba(255, 255, 255, 0.1);
+  --btn-num-active: rgba(255, 255, 255, 0.16);
+  --btn-num-text: #f1f5f9;
+
+  --btn-util-bg: rgba(148, 163, 184, 0.12);
+  --btn-util-hover: rgba(148, 163, 184, 0.22);
+  --btn-util-active: rgba(148, 163, 184, 0.3);
+  --btn-util-text: #cbd5e1;
+
+  --btn-op-bg: rgba(99, 102, 241, 0.18);
+  --btn-op-hover: rgba(99, 102, 241, 0.32);
+  --btn-op-active: rgba(99, 102, 241, 0.45);
+  --btn-op-text: #818cf8;
+  --btn-op-border: rgba(99, 102, 241, 0.3);
+
+  --btn-sci-bg: rgba(168, 85, 247, 0.14);
+  --btn-sci-hover: rgba(168, 85, 247, 0.26);
+  --btn-sci-active: rgba(168, 85, 247, 0.38);
+  --btn-sci-text: #c084fc;
+  --btn-sci-border: rgba(168, 85, 247, 0.25);
+
+  --btn-eq-bg: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  --btn-eq-hover: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  --btn-eq-active: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+  --btn-eq-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  --btn-eq-text: #ffffff;
+
+  /* State Colors */
+  --error-color: #f43f5e;
+  --focus-ring: #818cf8;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Outfit', 'Inter', sans-serif;
+
+  /* Radius & Spacing */
+  --radius-card: 28px;
+  --radius-display: 20px;
+  --radius-btn: 16px;
+  --grid-gap: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset & Layout Setup
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--bg-dark);
+  color: var(--btn-num-text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Ambient Background Decorations */
+.background-decorations {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.45;
+}
+
+.orb-1 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, rgba(79, 70, 229, 0) 70%);
+  top: -100px;
+  left: -100px;
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(147, 51, 234, 0) 70%);
+  bottom: -150px;
+  right: -100px;
+  animation: floatOrb 15s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 50px) scale(1.1); }
+}
+
+/* App Viewport Container */
+.app-viewport {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Calculator Card Layout
+   -------------------------------------------------------------------------- */
+.calculator-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
+}
+
+/* Expanded card width when scientific mode active */
+.calculator-card.mode-scientific {
+  max-width: 540px;
+}
+
+/* Header & Actions */
+.calculator-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--btn-op-text);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--btn-op-text);
+}
+
+.brand-title h1 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Mode Switch Radio Pill Group */
+.mode-toggle-group {
+  display: flex;
+  background: rgba(13, 18, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 2px;
+}
+
+.mode-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+  background: rgba(99, 102, 241, 0.3);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+/* History Icon Button */
+.btn-icon-action {
+  position: relative;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--focus-ring);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 10px;
+  border: 2px solid var(--bg-dark);
+}
+
+/* --------------------------------------------------------------------------
+   4. Calculator Display
+   -------------------------------------------------------------------------- */
+.display-container {
+  background: var(--display-bg);
+  border: 1px solid var(--display-border);
+  border-radius: var(--radius-display);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  min-height: 110px;
+  word-break: break-all;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.display-meta {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 2px;
+}
+
+.angle-indicator {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(192, 132, 252, 0.15);
+  color: var(--btn-sci-text);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.expression-display {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #64748b;
+  min-height: 1.4em;
+  line-height: 1.4;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.result-display {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  transition: font-size 0.15s ease, color 0.2s ease;
+}
+
+.result-display.has-error {
+  font-size: 1.4rem;
+  color: var(--error-color);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   5. Keypad Grids & Buttons
+   -------------------------------------------------------------------------- */
+.keypad-container, .scientific-section {
+  width: 100%;
+}
+
+.calculator-grid {
+  display: grid;
+  gap: var(--grid-gap);
+}
+
+.standard-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.scientific-grid {
+  grid-template-columns: repeat(5, 1fr);
+  margin-bottom: var(--grid-gap);
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  outline: none;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  height: 60px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.btn.btn-pressed {
+  transform: scale(0.94) !important;
+  filter: brightness(1.25);
+}
+
+/* Button Variants */
+.btn-number {
+  background: var(--btn-num-bg);
+  color: var(--btn-num-text);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.btn-number:hover { background: var(--btn-num-hover); }
+.btn-number:active { background: var(--btn-num-active); transform: scale(0.95); }
+
+.btn-utility {
+  background: var(--btn-util-bg);
+  color: var(--btn-util-text);
+  font-size: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.btn-utility:hover { background: var(--btn-util-hover); color: #ffffff; }
+.btn-utility:active { background: var(--btn-util-active); transform: scale(0.95); }
+
+.btn-operator {
+  background: var(--btn-op-bg);
+  color: var(--btn-op-text);
+  font-size: 1.45rem;
+  border: 1px solid var(--btn-op-border);
+}
+
+.btn-operator:hover { background: var(--btn-op-hover); color: #ffffff; }
+.btn-operator:active { background: var(--btn-op-active); transform: scale(0.95); }
+
+.btn-operator.active-op {
+  background: var(--btn-op-active);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  border-color: rgba(129, 140, 248, 0.8);
+}
+
+/* Scientific Buttons */
+.btn-sci {
+  background: var(--btn-sci-bg);
+  color: var(--btn-sci-text);
+  font-size: 1.05rem;
+  font-weight: 500;
+  height: 52px;
+  border: 1px solid var(--btn-sci-border);
+}
+
+.btn-sci:hover {
+  background: var(--btn-sci-hover);
+  color: #ffffff;
+}
+
+.btn-sci:active {
+  background: var(--btn-sci-active);
+  transform: scale(0.95);
+}
+
+.btn-equals {
+  background: var(--btn-eq-bg);
+  color: var(--btn-eq-text);
+  font-size: 1.5rem;
+  font-weight: 600;
+  box-shadow: var(--btn-eq-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-equals:hover {
+  background: var(--btn-eq-hover);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55);
+}
+
+.btn-equals:active {
+  background: var(--btn-eq-active);
+  transform: scale(0.95);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  z-index: 2;
+}
+
+.icon-backspace {
+  display: block;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   6. History Drawer & Panel
+   -------------------------------------------------------------------------- */
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 13, 22, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 90;
+  transition: opacity 0.3s ease;
+}
+
+.history-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 360px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--card-border);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-drawer.hidden {
+  transform: translateX(100%);
+  display: flex !important; /* Managed by transform */
+  pointer-events: none;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 16px;
+}
+
+.history-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-text-action {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-text-action:hover {
+  color: var(--error-color);
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.btn-close-icon {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.btn-close-icon:hover { color: #ffffff; }
+
+.history-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateX(-2px);
+}
+
+.history-item-expr {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.history-item-res {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   7. Media Queries & Responsive Polish
+   -------------------------------------------------------------------------- */
+@media (max-width: 500px) {
+  .app-viewport { padding: 10px; }
+  .calculator-card { padding: 18px; gap: 14px; border-radius: 20px; }
+  .scientific-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .btn-sci { height: 44px; font-size: 0.85rem; border-radius: 10px; }
+  .btn { height: 54px; font-size: 1.2rem; border-radius: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
